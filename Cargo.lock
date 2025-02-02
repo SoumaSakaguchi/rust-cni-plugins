@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "rust-cni-plugin"
+name = "rust-cni-plugin_bridge"
 version = "0.1.0"

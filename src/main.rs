@@ -2,6 +2,7 @@ use std::env;
 
 mod bridge;
 mod iface;
+mod addr;
 
 fn main() {
     let (command, id, ns_id, if_name) = get_env();
@@ -11,9 +12,10 @@ fn main() {
     }
 
     match command.as_str() {
-        "ADD" => add(ns_id, if_name),
-        "DEL" => del(ns_id, if_name),
-        _     => eprintln!("未実装"),
+        "ADD"     => add(ns_id, if_name),
+        "DEL"     => del(ns_id, if_name),
+        "VERSION" => println!("\"cniVersion\":\"0.0.0\""),
+        _         => eprintln!("未実装"),
     }
 
 }
@@ -79,12 +81,16 @@ fn add(id: String,if_name: String) {
         eprintln!("インタフェースの作成に失敗: {}", e);
     }
 
-    if let Err(e) = iface::add_iface_in_jail(id, if_name.clone()) {
+    if let Err(e) = iface::add_iface_in_jail(id.clone(), if_name.clone()) {
         eprintln!("インタフェースの接続に失敗: {}", e);
     }
 
     if let Err(e) = bridge::add_iface_in_bridge(if_name.clone()) {
         eprintln!("インタフェースの接続に失敗: {}", e);
+    }
+
+    if let Err(e) = addr::add_addr_in_jail(id.clone(), if_name.clone()) {
+        eprintln!("アドレス割り当てに失敗: {}", e);
     }
 }
 
