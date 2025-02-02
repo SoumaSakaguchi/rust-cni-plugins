@@ -21,7 +21,7 @@ pub fn add_addr_in_jail(id: String, name: String) -> std::io::Result<()> {
     Ok(())
 }
 
-fn read_conf() -> io::Result<String> {
+pub fn read_conf() -> io::Result<String> {
     let file = File::open("/tmp/cni-ip.conf")?;
     let reader = BufReader::new(file);
     

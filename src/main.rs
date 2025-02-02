@@ -1,4 +1,6 @@
 use std::env;
+use serde::{Serialize, Deserialize};
+use serde_json;
 
 mod bridge;
 mod iface;
@@ -92,6 +94,9 @@ fn add(id: String,if_name: String) {
     if let Err(e) = addr::add_addr_in_jail(id.clone(), if_name.clone()) {
         eprintln!("アドレス割り当てに失敗: {}", e);
     }
+
+    let json_output = print_result(id.clone(), if_name.clone());
+    println!("{}", json_output);
 }
 
 fn del(id: String, if_name: String) {
@@ -112,4 +117,31 @@ fn del(id: String, if_name: String) {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+struct Ip4 {
+    ns_name: String,
+    name: String,
+}
 
+#[derive(Serialize, Deserialize)]
+struct Config {
+    cniVersion: String,
+    bridge: String,
+    ip4: Ip4,
+}
+
+fn print_result(id: String, if_name: String) -> String {
+    let config = Config {
+        cniVersion: "0.0.0".to_string(),
+        bridge: "cni0".to_string(),
+        ip4: Ip4 {
+            ns_name: id,
+            name: if_name,
+        },
+    };
+
+    match serde_json::to_string(&config) {
+        Ok(json_str) => json_str,
+        Err(e) => format!("Error generating JSON: {}", e),
+    }
+}
