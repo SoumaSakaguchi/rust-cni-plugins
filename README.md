@@ -18,7 +18,12 @@ CNI_COMMAND=ADD CNI_CONTAINERID=<jid> CNI_NETNS=<jid> CNI_IFNAME=<Interface_Name
 - ブリッジの作成
 - コンテナ・ブリッジへの接続
 - IPアドレスの割当
- - 好きなIPアドレスを/tmp/cni-ip.confに位置行書き込んでください
+	- 好きなIPアドレスを/tmp/cni-ip.confに位置行書き込んでください
+
+<b>/tmp/cni-ip.conf</b>
+```
+10.0.0.1
+```
 
 ## DEL実行
 ```
