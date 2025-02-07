@@ -1,5 +1,6 @@
 use std::process::Command;
 
+/* bridgeの作成 */
 pub fn create_bridge() -> std::io::Result<()> {
     let output = Command::new("ifconfig")
         .args(&["bridge", "create", "name", "cni0"])
@@ -17,6 +18,7 @@ pub fn create_bridge() -> std::io::Result<()> {
     Ok(())
 }
 
+/* bridgeへのインタフェース接続 */
 pub fn add_iface_in_bridge(name: String) -> std::io::Result<()> {
     let output = Command::new("ifconfig")
         .args(&["cni0", "addm", format!("{}b", name).as_str()])
@@ -34,6 +36,7 @@ pub fn add_iface_in_bridge(name: String) -> std::io::Result<()> {
     Ok(())
 }
 
+/* bridgeの削除 */
 pub fn delete_bridge() -> std::io::Result<()> {
     let output = Command::new("ifconfig")
         .args(&["cni0", "destroy"])
@@ -51,6 +54,7 @@ pub fn delete_bridge() -> std::io::Result<()> {
     Ok(())
 }
 
+/* bridgeからインタフェースを削除 */
 pub fn del_iface_in_bridge(name: String) -> std::io::Result<()> {
     let output = Command::new("ifconfig")
         .args(&["cni0", "deletem", format!("{}b", name).as_str()])

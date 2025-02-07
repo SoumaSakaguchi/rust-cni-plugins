@@ -1,6 +1,7 @@
 use std::process::Command;
 use std::io;
 
+/* インタフェースの作成 */
 pub fn create_iface(name: String) -> io::Result<()> {
     let output = Command::new("ifconfig")
         .args(&["epair", "create"])
@@ -53,6 +54,7 @@ pub fn create_iface(name: String) -> io::Result<()> {
     Ok(())
 }
 
+/* jailへのインタフェースの接続 */
 pub fn add_iface_in_jail(id: String ,name: String) -> std::io::Result<()> {
     let output = Command::new("ifconfig")
         .args(&[format!("{}a", name).as_str(), "vnet", id.as_str()])
@@ -70,6 +72,7 @@ pub fn add_iface_in_jail(id: String ,name: String) -> std::io::Result<()> {
     Ok(())
 }
 
+/* インタフェースの削除 */
 pub fn delete_iface(name: String) -> std::io::Result<()> {
     let output = Command::new("ifconfig")
         .args(&[format!("{}b", name).as_str(), "destroy"])
@@ -87,6 +90,7 @@ pub fn delete_iface(name: String) -> std::io::Result<()> {
     Ok(())
 }
 
+/* jailからのインタフェースの削除 */
 pub fn del_iface_in_jail(id: String ,name: String) -> std::io::Result<()> {
     let output = Command::new("ifconfig")
         .args(&[format!("{}a", name).as_str(), "-vnet", id.as_str()])

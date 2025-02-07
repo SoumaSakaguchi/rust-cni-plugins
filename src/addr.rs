@@ -2,6 +2,7 @@ use std::process::Command;
 use std::fs::File;
 use std::io::{self, BufReader, BufRead};
 
+/* インタフェースにアドレスの付与 */
 pub fn add_addr_in_jail(id: String, name: String) -> std::io::Result<()> {
     let addr = read_conf()?;
 
@@ -21,6 +22,7 @@ pub fn add_addr_in_jail(id: String, name: String) -> std::io::Result<()> {
     Ok(())
 }
 
+/* /tmp/cni-ip.confからIPアドレスの取得 */
 pub fn read_conf() -> io::Result<String> {
     let file = File::open("/tmp/cni-ip.conf")?;
     let reader = BufReader::new(file);

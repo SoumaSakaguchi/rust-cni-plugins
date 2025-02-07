@@ -7,12 +7,14 @@ mod iface;
 mod addr;
 
 fn main() {
+    /* 環境変数の取得 */
     let (command, id, ns_id, if_name) = get_env();
 
     if id != ns_id {
         eprintln!("CNI_CONTAINERIDとCNI_NETNSは同じ値が入る");
     }
 
+    /* ADD, DEL, VERSIONの実行 */
     match command.as_str() {
         "ADD"     => add(ns_id, if_name),
         "DEL"     => del(ns_id, if_name),
@@ -22,7 +24,9 @@ fn main() {
 
 }
 
+/* 環境変数の取得 */
 fn get_env() -> (String, String, String, String) {
+    /* CNI_COMMAND: 実行するコマンド */
     let command = match env::var("CNI_COMMAND") {
         Ok(cmd) if cmd == "ADD" || cmd == "DEL" || cmd == "CHECK" || cmd == "VERSION" => {
             println!("CNI_COMMAND: {}", cmd);
@@ -38,6 +42,7 @@ fn get_env() -> (String, String, String, String) {
         }
     };
 
+    /* CNI_CONTAINERD: 設定するコンテナ（CNI_NETNSと同じものを指定） */
     let id = match env::var("CNI_CONTAINERID") {
         Ok(id) => {
             println!("CNI_CONTAINERID: {}", id);
@@ -49,6 +54,7 @@ fn get_env() -> (String, String, String, String) {
         }
     };
 
+    /* CNI_NETNS: 設定するnetns（CNI_CONTAINERIDと同じものを指定） */
     let ns_id = match env::var("CNI_NETNS") {
         Ok(ns) => {
             println!("CNI_NETNS: {}", ns);
@@ -60,6 +66,7 @@ fn get_env() -> (String, String, String, String) {
         }
     };
 
+    /* CNI_IFNAME: 任意のインターフェース名 */
     let if_name = match env::var("CNI_IFNAME") {
         Ok(ifn) => {
             println!("CNI_IFNAME: {}", ifn);
@@ -74,6 +81,7 @@ fn get_env() -> (String, String, String, String) {
     (command, id, ns_id, if_name)
 }
 
+/* ADDの実行 */
 fn add(id: String,if_name: String) {
     if let Err(e) = bridge::create_bridge() {
         eprintln!("ブリッジの作成に失敗: {}", e);
@@ -99,6 +107,7 @@ fn add(id: String,if_name: String) {
     println!("{}", json_output);
 }
 
+/* DELの実行 */
 fn del(id: String, if_name: String) {
     if let Err(e) = bridge::del_iface_in_bridge(if_name.clone()) {
         eprintln!("インタフェースの接続に失敗: {}", e);
@@ -117,6 +126,7 @@ fn del(id: String, if_name: String) {
     }
 }
 
+/* 結果出力用の構造体 */
 #[derive(Serialize, Deserialize)]
 struct Ip4 {
     ns_name: String,
@@ -130,6 +140,7 @@ struct Config {
     ip4: Ip4,
 }
 
+/* 結果出力 */
 fn print_result(id: String, if_name: String) -> String {
     let config = Config {
         cniVersion: "0.0.0".to_string(),
